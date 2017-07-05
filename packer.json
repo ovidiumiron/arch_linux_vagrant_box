@@ -44,8 +44,12 @@
         "sed -i 's/# %wheel ALL=(ALL) NOPASSWD: ALL/%wheel ALL=(ALL) NOPASSWD: ALL/g' /etc/sudoers", "<enter>", "<wait>", 
         "passwd vagrant<<EOF", "<enter>", "vagrant", "<enter>", "vagrant", "<enter>", "EOF", "<enter>",
         "exit", "<enter>", "<wait>",
-        "reboot now", "<enter>", "<wait10>","<wait5>",
-        "<enter>", "<enter>", "<enter>", "<enter>"
+        "reboot now", "<enter>", "<wait10>",
+        "<enter>", "<wait5>",
+        "<enter>", "<wait5>",
+        "<enter>", "<wait5>",
+        "<enter>", "<wait5>",
+        "<enter>", "<wait5>"
     ]
   }],
   "provisioners": [
