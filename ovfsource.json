@@ -1,0 +1,18 @@
+
+{
+  "builders": [
+    {
+    "type": "virtualbox-ovf",
+    "source_path": "output-virtualbox-iso/baseimage.ovf",
+    "ssh_username": "vagrant",
+    "ssh_password": "vagrant",
+    "shutdown_command": "echo 'vagrant' | sudo -S shutdown -P now"
+    }
+  ],
+  "provisioners": [{
+      "type": "shell",
+      "inline":[
+        "sudo echo 'Working in progress. Please don't interrupt'"
+      ]
+  }]
+}

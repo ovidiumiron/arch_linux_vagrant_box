@@ -1,0 +1,58 @@
+{
+  "builders": [{
+    "type": "virtualbox-iso",
+    "vm_name": "archlinux",
+    "guest_os_type": "ArchLinux_64",
+    "iso_checksum_type": "md5",
+    "iso_checksum_url": "http://ftp.heanet.ie/mirrors/ftp.archlinux.org/iso/2017.06.01/md5sums.txt",
+    "iso_url": "http://ftp.heanet.ie/mirrors/ftp.archlinux.org/iso/2017.06.01/archlinux-2017.06.01-x86_64.iso",
+    "ssh_username": "vagrant",
+    "ssh_password": "vagrant",
+    "ssh_wait_timeout": "6000s",
+    "shutdown_command": "sudo -S shutdown -P now",
+    "headless":"false",
+    "vboxmanage": [
+       ["modifyvm", "{{.Name}}", "--memory", "2048"],
+       ["modifyvm", "{{.Name}}", "--cpus", "2"]
+      ],
+  	"boot_command": [
+        "<enter>", "<wait10>","<wait10>",
+        "timedatectl set-ntp true", "<enter>","<wait>",
+        "parted --script -- /dev/sda mklabel msdos mkpart primary 1 20GiB", "<enter>", "<wait>",
+        "parted --script -- /dev/sda set 1 boot on", "<enter>", "<wait>",
+        "parted --script -- /dev/sda mklabel msdos mkpart primary ext4 20GiB 100%", "<enter>", "<wait>",
+        "mkfs.ext4 /dev/sda1", "<enter>", "<wait>",
+        "mount /dev/sda1 /mnt", "<enter>", "<wait>",
+        "pacstrap /mnt base dhclient openssh grub ifplugd netctl sudo", "<enter>", "<wait10>", "<wait10>", "<wait10>", "<wait10>",
+        "genfstab -U /mnt >> /mnt/etc/fstab", "<enter>", "<wait>",
+        "arch-chroot /mnt", "<enter>", "<wait>",
+        "ln -sf /usr/share/zoneinfo/Europe/Dublin /etc/localtime", "<enter>", "<wait>",
+        "hwclock --systohc", "<enter>", "<wait>",
+        "sed -i 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8/g' /etc/locale.gen", "<enter>", "<wait>",
+        "locale-gen", "<enter>", "<wait>",
+        "systemctl enable netctl-ifplugd@enp0s3", "<enter>", "<wait>",
+        "systemctl enable dhclient@enp0s3", "<enter>", "<wait>",
+        "systemctl enable sshd.service", "<enter>", "<wait>",
+        "passwd <<EOF", "<enter>", "vagrant", "<enter>", "vagrant", "<enter>", "EOF", "<enter>",
+        "grub-install --target=i386-pc /dev/sda", "<enter>", "<wait>",
+        "grub-mkconfig -o /boot/grub/grub.cfg", "<enter>", "<wait>",
+        "cp /etc/netctl/examples/ethernet-dhcp /etc/netctl/", "<enter>", "<wait>",
+        "sed -i 's/Interface=eth0/Interface=enp0s3/g' /etc/netctl/ethernet-dhcp","<enter>", "<wait>",
+        "netctl enable ethernet-dhcp", "<enter>", "<wait>",
+        "groupadd vagrant", "<enter>", "<wait>",
+        "useradd -m -g vagrant -G wheel -s /bin/bash vagrant", "<enter>", "<wait>",
+        "sed -i 's/# %wheel ALL=(ALL) NOPASSWD: ALL/%wheel ALL=(ALL) NOPASSWD: ALL/g' /etc/sudoers", "<enter>", "<wait>", 
+        "passwd vagrant<<EOF", "<enter>", "vagrant", "<enter>", "vagrant", "<enter>", "EOF", "<enter>",
+        "exit", "<enter>", "<wait>",
+        "reboot now", "<enter>", "<wait10>","<wait5>",
+        "<enter>", "<enter>", "<enter>", "<enter>"
+    ]
+  }],
+  "provisioners": [
+  {
+      "type": "shell",
+      "scripts": [
+          "./upgrade.sh"
+      ]
+  }]
+}
